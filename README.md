@@ -31,11 +31,11 @@
 
 ### 1. 配置变量
 
-在根目录下创建一个 `terraform.tfvars` 文件，并提供 `public_key`（用于 SSH 登录管理服务器）：
+在根目录下创建一个 `terraform.tfvars` 文件，并提供 `public_key_path`（指向你的本地公钥文件）：
 
 ```hcl
-public_key = "ssh-rsa AAAAB3Nza...你的公钥内容..."
 aws_region = "ap-east-1"
+public_key_path = "~/.ssh/id_rsa.pub"
 ```
 
 ### 2. 初始化与部署

@@ -22,3 +22,9 @@ variable "eks_cluster_version" {
   type    = string
   default = "1.35"
 }
+
+variable "public_key_path" {
+  type        = string
+  description = "本地公钥文件的路径"
+  default     = "~/.ssh/id_rsa.pub"
+}

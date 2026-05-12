@@ -17,7 +17,7 @@ module "eks" {
 
 resource "aws_key_pair" "kubectl_key" {
   key_name   = "kubectl-server-key"
-  public_key = var.public_key # 确保在 variables.tf 中定义了此变量
+  public_key = file(var.public_key_path)
 }
 
 module "kubectl_server" {
