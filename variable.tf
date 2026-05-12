@@ -1,0 +1,24 @@
+variable "aws_region" {
+  type    = string
+  default = "ap-east-1"
+}
+
+variable "vpc_name" {
+  type    = string
+  default = "smart-eks-vpc"
+}
+
+variable "vpc_cidr" {
+  type    = string
+  default = "10.10.0.0/19"
+}
+
+variable "eks_cluster_name" {
+  type    = string
+  default = "smart-eks-cluster"
+}
+
+variable "eks_cluster_version" {
+  type    = string
+  default = "1.35"
+}

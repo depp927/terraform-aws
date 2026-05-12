@@ -1,0 +1,12 @@
+# Terraform 状态文件（含敏感信息，不能提交）
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+
+# 本地变量覆盖文件（可能含密码、密钥）
+*.tfvars
+*.tfvars.json
+
+# 系统文件
+.DS_Store
