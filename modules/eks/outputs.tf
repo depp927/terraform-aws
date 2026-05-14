@@ -17,3 +17,7 @@ output "cluster_arn" {
 output "node_role_arn" {
   value = aws_iam_role.node.arn
 }
+
+output "cluster_security_group_id" {
+  value = aws_eks_cluster.main.vpc_config[0].cluster_security_group_id
+}

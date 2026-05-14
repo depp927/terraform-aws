@@ -15,10 +15,11 @@ output "security_group_id" {
 
 output "subnet_id" {
   description = "Jenkins 实际部署的子网 ID"
-  value       = data.aws_subnet.target.id
+  value       = var.subnet_id
 }
 
 output "iam_role_arn" {
   description = "Jenkins IAM Role ARN"
   value       = aws_iam_role.jenkins.arn
 }
+

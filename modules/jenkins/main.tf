@@ -1,24 +1,3 @@
-# ── 查询已有 VPC ──────────────────────────────────────────
-data "aws_vpc" "selected" {
-  filter {
-    name   = "tag:Name"
-    values = [var.vpc_name]
-  }
-}
-
-# ── 查询目标私有子网（匹配 Name 标签格式）────────────────
-data "aws_subnet" "target" {
-  filter {
-    name   = "tag:Name"
-    values = ["${var.vpc_name}-private-${var.subnet_index}"]
-  }
-
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.selected.id]
-  }
-}
-
 # ── AMI：最新 Amazon Linux 2023 ───────────────────────────
 data "aws_ami" "al2023" {
   most_recent = true
@@ -39,9 +18,8 @@ data "aws_ami" "al2023" {
 resource "aws_security_group" "jenkins" {
   name        = "${var.vpc_name}-jenkins-sg"
   description = "Jenkins server security group"
-  vpc_id      = data.aws_vpc.selected.id
+  vpc_id      = var.vpc_id          # ✅ 改为变量
 
-  # Jenkins Web UI
   ingress {
     from_port   = 8080
     to_port     = 8080
@@ -50,12 +28,11 @@ resource "aws_security_group" "jenkins" {
     description = "Jenkins Web UI"
   }
 
-  # SSH（仅内网访问，按需调整）
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [data.aws_vpc.selected.cidr_block]
+    cidr_blocks = [var.vpc_cidr]    # ✅ 改为变量
     description = "SSH from VPC"
   }
 
@@ -71,7 +48,7 @@ resource "aws_security_group" "jenkins" {
   })
 }
 
-# ── IAM Role（Jenkins 需要访问 AWS 资源时使用）────────────
+# ── IAM Role ──────────────────────────────────────────────
 resource "aws_iam_role" "jenkins" {
   name = "${var.vpc_name}-jenkins-role"
 
@@ -96,12 +73,11 @@ resource "aws_iam_instance_profile" "jenkins" {
 resource "aws_instance" "jenkins" {
   ami                    = data.aws_ami.al2023.id
   instance_type          = var.instance_type
-  subnet_id              = data.aws_subnet.target.id
+  subnet_id              = var.subnet_id
   key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.jenkins.id]
   iam_instance_profile   = aws_iam_instance_profile.jenkins.name
 
-  # 私有子网不分配公网 IP
   associate_public_ip_address = false
 
   root_block_device {
@@ -120,6 +96,6 @@ resource "aws_instance" "jenkins" {
   })
 
   lifecycle {
-    ignore_changes = [ami] # 防止 AMI 更新触发重建
+    ignore_changes = [ami]
   }
 }

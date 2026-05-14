@@ -38,7 +38,7 @@ resource "aws_security_group_rule" "allow_kubectl_to_eks" {
   from_port                = 443
   to_port                  = 443
   protocol                 = "tcp"
-  security_group_id        = var.eks_cluster_security_group_id
+  security_group_id = var.eks_cluster_security_group_id
   source_security_group_id = aws_security_group.kubectl_sg.id
   description              = "Allow management server to access EKS Private API"
 }

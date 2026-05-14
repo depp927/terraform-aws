@@ -1,16 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
-# ── 安装 Docker ───────────────────────────────────────────
-dnf install -y docker
+# ── 安装 Docker + Compose plugin ─────────────────────────
+dnf install -y docker docker-compose-plugin
 systemctl enable --now docker
-
-# ── 安装 Docker Compose plugin ────────────────────────────
-COMPOSE_VERSION="2.27.1"
-mkdir -p /usr/local/lib/docker/cli-plugins
-curl -SL "https://github.com/docker/compose/releases/download/v${COMPOSE_VERSION}/docker-compose-linux-x86_64" \
-  -o /usr/local/lib/docker/cli-plugins/docker-compose
-chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 
 # ── 创建宿主机目录 ────────────────────────────────────────
 mkdir -p /data/jenkins_home
