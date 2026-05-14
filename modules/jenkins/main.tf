@@ -18,7 +18,7 @@ data "aws_ami" "al2023" {
 resource "aws_security_group" "jenkins" {
   name        = "${var.vpc_name}-jenkins-sg"
   description = "Jenkins server security group"
-  vpc_id      = var.vpc_id          # ✅ 改为变量
+  vpc_id      = var.vpc_id          # 改为变量
 
   ingress {
     from_port   = 8080
@@ -32,7 +32,7 @@ resource "aws_security_group" "jenkins" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]    # ✅ 改为变量
+    cidr_blocks = [var.vpc_cidr]    # 改为变量
     description = "SSH from VPC"
   }
 
