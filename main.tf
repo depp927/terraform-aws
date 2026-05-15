@@ -53,6 +53,30 @@ module "jenkins" {
   }
 }
 
+module "jenkins_alb" {
+  source      = "./modules/alb"
+  alb_name    = "jenkins-alb"
+  vpc_id      = module.vpc.vpc_id
+  subnet_ids  = module.vpc.public_subnet_ids
+  is_internal = false
+  target_id   = module.jenkins.instance_id # 引用 jenkins 模块的输出
+  target_port = 8080
+}
+
+
+resource "aws_security_group_rule" "allow_alb_to_jenkins" {
+  type              = "ingress"
+  from_port         = 8080
+  to_port           = 8080
+  protocol          = "tcp"
+  # 字段 1：规则应用到哪个安全组上（Jenkins 的 SG）
+  security_group_id = module.jenkins.security_group_id
+
+  # 字段 2：允许谁访问？（ALB的SG ID）
+  # 注意：使用了 source_security_group_id，就不能同时使用 cidr_blocks
+  source_security_group_id = module.alb.alb_sg_id
+}
+
 output "kubectl_server_public_ip" {
   value = module.kubectl_server.public_ip
 }
