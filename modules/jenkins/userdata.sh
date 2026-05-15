@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # ── 安装 Docker + Compose plugin ─────────────────────────
-dnf install -y docker docker-compose-plugin
+sudo dnf install -y docker docker-compose-plugin
 systemctl enable --now docker
 
 # ── 创建宿主机目录 ────────────────────────────────────────
