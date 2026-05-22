@@ -58,7 +58,7 @@ resource "aws_instance" "kubectl_server" {
 
               apt-get update -y
               apt-get install -y unzip curl
-
+              
               curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
               chmod +x ./kubectl
               mv ./kubectl /usr/local/bin/
@@ -79,6 +79,7 @@ resource "aws_instance" "kubectl_server" {
               done
 
               mkdir -p /home/ubuntu/.kube/
+              sudo chown -R ubuntu:ubuntu .kube
               sudo -u ubuntu /usr/local/bin/aws eks update-kubeconfig --region ${var.aws_region} --name ${var.eks_cluster_name}
               chown ubuntu:ubuntu /home/ubuntu/.kube/config
               EOF

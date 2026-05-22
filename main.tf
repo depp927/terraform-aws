@@ -6,7 +6,7 @@ module "vpc" {
   eks_cluster_name = var.eks_cluster_name
 }
 
-/*
+
 module "eks" {
   source = "./modules/eks"
 
@@ -14,14 +14,14 @@ module "eks" {
   eks_cluster_version = var.eks_cluster_version
   private_subnet_ids  = module.vpc.private_subnet_ids
 }
-*/
+
 
 resource "aws_key_pair" "kubectl_key" {
   key_name   = "kubectl-server-key"
   public_key = file(var.public_key_path)
 }
 
-/*
+
 module "kubectl_server" {
   source = "./modules/kubectl_server"
 
@@ -34,9 +34,9 @@ module "kubectl_server" {
   key_name                      = aws_key_pair.kubectl_key.key_name
   depends_on = [module.eks]
 }
-*/
 
-/*
+
+
 module "jenkins" {
   source = "./modules/jenkins"   # 根据你的实际路径调整
   vpc_id        = module.vpc.vpc_id
@@ -81,12 +81,11 @@ resource "aws_security_group_rule" "allow_alb_to_jenkins" {
   # 注意：使用了 source_security_group_id，就不能同时使用 cidr_blocks
   source_security_group_id = module.alb.alb_sg_id
 }
-*/
 
 
 
-/*
+
+
 output "kubectl_server_public_ip" {
   value = module.kubectl_server.public_ip
 }
-*/
