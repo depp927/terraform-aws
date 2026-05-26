@@ -56,12 +56,12 @@ resource "aws_instance" "kubectl_server" {
               #!/bin/bash
               exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
-              apt-get update -y
-              apt-get install -y unzip curl
+              sudo apt-get update -y
+              sudo apt-get install -y unzip curl
               
               curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
               chmod +x ./kubectl
-              mv ./kubectl /usr/local/bin/
+              sudo mv ./kubectl /usr/local/bin/
 
               curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
               unzip awscliv2.zip
@@ -79,7 +79,7 @@ resource "aws_instance" "kubectl_server" {
               done
 
               mkdir -p /home/ubuntu/.kube/
-              sudo chown -R ubuntu:ubuntu .kube
+              sudo chown -R ubuntu:ubuntu /home/ubuntu/.kube/
               sudo -u ubuntu /usr/local/bin/aws eks update-kubeconfig --region ${var.aws_region} --name ${var.eks_cluster_name}
               chown ubuntu:ubuntu /home/ubuntu/.kube/config
               EOF

@@ -67,7 +67,7 @@ resource "aws_iam_role" "jenkins" {
 resource "aws_iam_instance_profile" "jenkins" {
   name = "${var.vpc_name}-jenkins-profile"
   role = aws_iam_role.jenkins.name
-}
+} 
 
 # ── EC2 实例 ──────────────────────────────────────────────
 resource "aws_instance" "jenkins" {

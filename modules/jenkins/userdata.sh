@@ -35,7 +35,7 @@ services:
 EOF
 
 # ── 启动 Jenkins ──────────────────────────────────────────
-docker compose -f /data/compose/docker-compose.yaml up -d
+sudo docker compose -f /data/compose/docker-compose.yaml up -d
 
 # ── 等待初始密码生成后写入日志 ────────────────────────────
 for i in {1..30}; do
