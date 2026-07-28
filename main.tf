@@ -6,19 +6,83 @@ module "vpc" {
   eks_cluster_name = var.eks_cluster_name
 }
 
+resource "aws_key_pair" "kubectl_key" {
+  key_name   = "kubectl-server-key"
+  public_key = file(var.public_key_path)
+}
 
+module "jumpserver" {
+  source = "./modules/jumpserver"
+
+  name      = "${var.vpc_name}-jumpserver"
+  vpc_id    = module.vpc.vpc_id
+  subnet_id = module.vpc.private_subnet_ids[0]
+  key_name  = aws_key_pair.kubectl_key.key_name
+
+  instance_type = "t3.medium"
+  tags = {
+    Environment = "dev"
+    ManagedBy   = "terraform"
+  }
+}
+
+module "jumpserver_pub_alb" {
+  source = "./modules/jumpserver-pub-alb"
+
+  alb_name    = "${var.vpc_name}-jumpserver-alb"
+  vpc_id      = module.vpc.vpc_id
+  subnet_ids  = module.vpc.public_subnet_ids
+  target_id   = module.jumpserver.instance_id
+  target_port = 80
+
+  tags = {
+    Environment = "dev"
+    ManagedBy   = "terraform"
+  }
+}
+
+resource "aws_security_group_rule" "allow_alb_to_jumpserver_web" {
+  type                     = "ingress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  security_group_id        = module.jumpserver.security_group_id
+  source_security_group_id = module.jumpserver_pub_alb.alb_sg_id
+  description              = "Allow ALB to access JumpServer web"
+}
+
+module "jumpserver_nlb_ssh" {
+  source = "./modules/jumpserver-nlb-ssh"
+
+  nlb_name    = "${var.vpc_name}-jumpserver-nlb"
+  vpc_id      = module.vpc.vpc_id
+  subnet_ids  = module.vpc.public_subnet_ids
+  target_id   = module.jumpserver.instance_id
+  target_port = 22
+
+  tags = {
+    Environment = "dev"
+    ManagedBy   = "terraform"
+  }
+}
+
+resource "aws_security_group_rule" "allow_nlb_to_jumpserver_ssh" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  security_group_id        = module.jumpserver.security_group_id
+  source_security_group_id = module.jumpserver_nlb_ssh.nlb_sg_id
+  description              = "Allow NLB to access JumpServer SSH"
+}
+
+/* 
 module "eks" {
   source = "./modules/eks"
 
   eks_cluster_name    = var.eks_cluster_name
   eks_cluster_version = var.eks_cluster_version
   private_subnet_ids  = module.vpc.private_subnet_ids
-}
-
-
-resource "aws_key_pair" "kubectl_key" {
-  key_name   = "kubectl-server-key"
-  public_key = file(var.public_key_path)
 }
 
 
@@ -85,7 +149,8 @@ resource "aws_security_group_rule" "allow_alb_to_jenkins" {
 
 
 
-
 output "kubectl_server_public_ip" {
   value = module.kubectl_server.public_ip
 }
+
+*/

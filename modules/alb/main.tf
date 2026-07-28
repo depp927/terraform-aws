@@ -1,7 +1,7 @@
 # 1. ALB 的安全组：允许外部 80 端口进入
 resource "aws_security_group" "alb_sg" {
-  name        = "${var.alb_name}-sg"
-  vpc_id      = var.vpc_id
+  name   = "${var.alb_name}-sg"
+  vpc_id = var.vpc_id
 
   ingress {
     from_port   = 80

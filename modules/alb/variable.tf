@@ -4,7 +4,7 @@ variable "alb_name" {
 }
 
 variable "vpc_id" {
-  type        = string
+  type = string
 }
 
 variable "subnet_ids" {
@@ -24,8 +24,8 @@ variable "target_id" {
 }
 
 variable "target_port" {
-  type        = number
-  default     = 8080
+  type    = number
+  default = 8080
 }
 
 variable "tags" {

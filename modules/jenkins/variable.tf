@@ -6,7 +6,7 @@ variable "vpc_name" {
 variable "aws_region" {
   type    = string
   default = "us-east-1"
-  }
+}
 
 # Jenkins module 自身特有的
 variable "subnet_index" {
