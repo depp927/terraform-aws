@@ -17,6 +17,35 @@ export DEBIAN_FRONTEND=noninteractive
 
 INSTALLER_VERSION="v4.10.17"
 INSTALLER_DIR="/opt/jumpserver-installer-$INSTALLER_VERSION"
+APT_OPTS=(
+  "-o" "Acquire::ForceIPv4=true"
+  "-o" "Acquire::Retries=6"
+  "-o" "Acquire::http::Timeout=30"
+  "-o" "Acquire::https::Timeout=30"
+)
+
+retry() {
+  local attempts="$1"
+  local sleep_seconds="$2"
+  shift 2
+
+  local try=1
+  while true; do
+    if "$@"; then
+      return 0
+    fi
+
+    if [ "$try" -ge "$attempts" ]; then
+      echo "Command failed after $try attempts: $*"
+      return 1
+    fi
+
+    echo "Command failed (attempt $try/$attempts): $*"
+    echo "Retrying in ${sleep_seconds}s..."
+    sleep "$sleep_seconds"
+    try=$((try + 1))
+  done
+}
 
 CPU_COUNT="$(nproc)"
 MEMORY_MB="$(awk "/MemTotal/ {print int(\$2/1024)}" /proc/meminfo)"
@@ -25,8 +54,8 @@ if [ "$CPU_COUNT" -lt 4 ] || [ "$MEMORY_MB" -lt 8192 ]; then
   echo "Warning: JumpServer official quick install recommends at least 4 vCPU and 8 GiB RAM. Current instance may fail to install or run unstably."
 fi
 
-apt-get update -y
-apt-get install -y ca-certificates curl wget tar iptables gettext
+retry 12 10 apt-get "${APT_OPTS[@]}" update -y
+retry 12 10 apt-get "${APT_OPTS[@]}" install -y ca-certificates curl wget tar iptables gettext
 
 cd /opt
 if [ ! -d "$INSTALLER_DIR" ]; then

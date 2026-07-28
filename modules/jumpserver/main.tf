@@ -18,14 +18,6 @@ resource "aws_security_group" "jumpserver" {
   description = "Jumpserver security group"
   vpc_id      = var.vpc_id
 
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow SSH from anywhere"
-  }
-
   egress {
     from_port   = 0
     to_port     = 0
@@ -38,13 +30,23 @@ resource "aws_security_group" "jumpserver" {
   })
 }
 
+resource "aws_security_group_rule" "allow_ssh_from_anywhere" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  security_group_id = aws_security_group.jumpserver.id
+  cidr_blocks       = ["0.0.0.0/0"]
+  description       = "Allow SSH from anywhere"
+}
+
 resource "aws_instance" "jumpserver" {
   ami                         = data.aws_ami.ubuntu_24.id
   instance_type               = var.instance_type
   subnet_id                   = var.subnet_id
   key_name                    = var.key_name
   vpc_security_group_ids      = [aws_security_group.jumpserver.id]
-  user_data                   = templatefile("${path.module}/userdata.sh", {})
+  user_data                   = file("${path.module}/userdata.sh")
   user_data_replace_on_change = true
 
   associate_public_ip_address = false

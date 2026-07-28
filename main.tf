@@ -12,7 +12,8 @@ resource "aws_key_pair" "kubectl_key" {
 }
 
 module "jumpserver" {
-  source = "./modules/jumpserver"
+  source     = "./modules/jumpserver"
+  depends_on = [module.vpc]
 
   name      = "${var.vpc_name}-jumpserver"
   vpc_id    = module.vpc.vpc_id

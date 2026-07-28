@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "*.tf": "terraform",
+    "*.tfvars": "terraform-vars",
+    "*.hcl": "hcl"
+  }
+}
