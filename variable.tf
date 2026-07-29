@@ -5,7 +5,7 @@ variable "aws_region" {
 
 variable "vpc_name" {
   type    = string
-  default = "smart-eks-vpc"
+  default = "tokenos-vpc"
 }
 
 variable "vpc_cidr" {

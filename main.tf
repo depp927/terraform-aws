@@ -27,6 +27,23 @@ module "jumpserver" {
   }
 }
 
+module "tokenos_app01" {
+  source     = "./modules/private-ubuntu-server"
+  depends_on = [module.vpc, module.jumpserver]
+
+  name                         = "tokenos-app01"
+  vpc_id                       = module.vpc.vpc_id
+  subnet_id                    = module.vpc.private_subnet_ids[1]
+  key_name                     = aws_key_pair.kubectl_key.key_name
+  jumpserver_security_group_id = module.jumpserver.security_group_id
+  instance_type                = "m7i.xlarge"
+
+  tags = {
+    Environment = "dev"
+    ManagedBy   = "terraform"
+  }
+}
+
 module "jumpserver_pub_alb" {
   source = "./modules/jumpserver-pub-alb"
 
